@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calculator</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="calculator">
+  <input type="text" class="value" readonly id="display" />
+  <span class="clear" id="clear">C</span>
+  <span class="plus" id="plus">+</span>
+  <span id="minus">-</span>
+  <span id="multiply">*</span>
+  <span id="modulus">%</span>
+  <span id="seven">7</span>
+  <span id="eight">8</span>
+  <span id="nine">9</span>
+  <span id="four">4</span>
+  <span id="five">5</span>
+  <span id="six">6</span>
+  <span id="one">1</span>
+  <span id="two">2</span>
+  <span id="three">3</span>
+  <span id="zero">0</span>
+  <span id="dot">.</span>
+  <span class="equal" id="equal">=</span>
+</div>
+<script>
+  (function() {
+    const display = document.getElementById('display');
+    let currentInput = '';
+    let lastInput = '';
+    let operator = null;
+
+    function updateDisplay() {
+      display.value = currentInput;
+    }
+
+    function appendNumber(num) {
+      if (num === '.' && currentInput.includes('.')) return;
+      currentInput += num;
+      updateDisplay();
+    }
+
+    function clearAll() {
+      currentInput = '';
+      operator = null;
+      lastInput = '';
+      updateDisplay();
+    }
+
+    function setOperator(op) {
+      if (currentInput === '') return;
+      if (operator !== null) {
+        calculate();
+      }
+      operator = op;
+      lastInput = currentInput;
+      currentInput = '';
+    }
+
+    function calculate() {
+      if (operator === null || currentInput === '' || lastInput === '') return;
+      const a = parseFloat(lastInput);
+      const b = parseFloat(currentInput);
+      let result = 0;
+      switch(operator) {
+        case '+':
+          result = a + b;
+          break;
+        case '-':
+          result = a - b;
+          break;
+        case '*':
+          result = a * b;
+          break;
+        case '%':
+          result = a % b;
+          break;
+        default:
+          return;
+      }
+      currentInput = result.toString();
+      operator = null;
+      lastInput = '';
+      updateDisplay();
+    }
+
+    document.querySelectorAll('.calculator span').forEach(button => {
+      button.addEventListener('click', () => {
+        const id = button.id;
+        if (id === 'clear') {
+          clearAll();
+        } else if (id === 'plus') {
+          setOperator('+');
+        } else if (id === 'minus') {
+          setOperator('-');
+        } else if (id === 'multiply') {
+          setOperator('*');
+        } else if (id === 'modulus') {
+          setOperator('%');
+        } else if (id === 'equal') {
+          calculate();
+        } else if (id === 'dot') {
+          appendNumber('.');
+        } else {
+          // For number buttons
+          if (!isNaN(id)) {
+            appendNumber(button.textContent);
+          } else {
+            // fallback for buttons with text content as numbers
+            const val = button.textContent;
+            if (!isNaN(val)) {
+              appendNumber(val);
+            }
+          }
+        }
+      });
+    });
+
+    clearAll();
+  })();
+</script>
+</body>
+</html>
